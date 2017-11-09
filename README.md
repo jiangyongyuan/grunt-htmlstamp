@@ -377,6 +377,21 @@ requirejs.config({
 ## Other
 本插件的测试用例中列举了一些用例，可供参考。
 
+调整后的使用方法：
+'htmlstamp': {
+            options: {
+              // Task-specific options go here.
+               type: 'inline',
+               src:'WEB-INF/jsp/',
+               dest:'WEB-INF/jsp-dist/',
+               patten:'**/*.jsp',
+               comboCss:'static/css/**/*.css'
+            },
+            doinline:{
+
+            }
+          }
+
 ## Release History
 2015-11-23 v1.2.1 Fix bug: [#1](https://github.com/helinjiang/grunt-htmlstamp/issues/1) and [#2](https://github.com/helinjiang/grunt-htmlstamp/issues/2)
 
