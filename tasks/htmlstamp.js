@@ -32,6 +32,10 @@ module.exports = function (grunt) {
             shim: {}, // 需要修正的对应关系，key值为当前正使用的文件，value值为替换key值的新的文件，用于type=suffix和embed模式
             requirejsConfigUrl: '', // 针对RequireJS的特别的配置，为配置requirejs.config的文件
             requirejsBaseUrl: '' // 针对RequireJS的特别的配置，为配置requirejs.config中的baseUrl，但该地址是相对于Gruntfile.js的路径
+            ,src:'',
+            dest:'',
+            patten:'**/*.html',
+            comboCss:'**/*.css'
         });
 
         /**
@@ -68,15 +72,23 @@ module.exports = function (grunt) {
          */
         var taskTarget = this.target;
 
+        var srcFiles = grunt.file.expand( options.src + options.patten );
+        var cssFiles = grunt.file.expand( options.comboCss );
+
+
         // Iterate over all specified file groups.
-        this.files.forEach(function (f) {
+        //this.srcFiles.forEach(function (f) {
+        for( var i = 0 ; i < srcFiles.length ; i++ ){
+
+            var f = srcFiles[i];
+
             /**
              * html实际的文件路径，相对Gruntfile.js的路径
              * @type {String}
              */
-            var htmlFilePath = f.dest;
+            var htmlFilePath = f;// f.dest;
 
-            var srcArr = f.src;
+            var srcArr = cssFiles;//f.src;
 
             //如果isRequireJS模式，则在src中追加options.requirejsConfigUrl
             if (isRequireJS) {
@@ -184,18 +196,20 @@ module.exports = function (grunt) {
                     tool.copyFileIfEmbed(grunt, fileArr);
                     break;
                 case 'inline':
-                    newContent = tool.getHtmlContentInline($, fileArr, scriptAttr, grunt);
+                    newContent = tool.getHtmlContentInline( htmlContent , $, fileArr, scriptAttr, grunt);
                     break;
                 default :
                     newContent = tool.getHtmlContentSuffix($, fileArr, scriptAttr);
                     break;
             }
 
+            var toPath = htmlFilePath.replace( options.src , options.dest );
+
             // 写入dest文件内容
-            grunt.file.write(htmlFilePath, newContent);
+            grunt.file.write( toPath , newContent);
 
             // Print a success message.
-            grunt.log.writeln('File "' + htmlFilePath + '" created success.');
+            grunt.log.writeln('File "' + toPath + '" created success.');
 
             // 如果requirejs场景，还需要处理options.requirejsConfigUrl及其定义的依赖（这些依赖js从f.src中传入）
             if (isRequireJS && (['suffix', 'embed'].indexOf(options.type) > -1)) {
@@ -204,7 +218,8 @@ module.exports = function (grunt) {
                     grunt.log.writeln('Deal dependence of RequireJS by "' + options.requirejsConfigUrl + '" for file "' + htmlFilePath + '" success.');
                 }
             }
-        });
+        //});
+        }
     });
 
 };
